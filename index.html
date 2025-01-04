@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Visual Perceptual Skills</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div id="quiz-container">
+        <h1>Visual Perceptual Skills</h1>
+            <a href="report.html" style="text-decoration: none;"><button>Report</button></a>
+        <h2>Select a Quiz Type:</h2>
+<br>
+        <!-- Quiz Type Selection -->
+        <div id="quiz-type">
+            
+            <button onclick="startQuiz('animals')">Fixation to Mirror</button>
+            <a href="VD.html" style="text-decoration: none;"><button>Visual Discrimination</button></a>
+            <button onclick="startQuiz('colors')">Virtual Closure</button>
+            <button onclick="startQuiz('colors')">Virtual Form Constancy</button>
+            <button onclick="startQuiz('colors')">Figure Ground</button>
+            <button onclick="startQuiz('colors')">Spatial Relations</button>
+            <button onclick="startQuiz('colors')">Visual Neglect</button>
+            <button onclick="startQuiz('colors')">Visual Sequential Memory</button>
+            <button onclick="startQuiz('colors')">Visual Memory</button>
+            <button onclick="startQuiz('colors')">Motion Perception</button>
+        </div>
+
+
+        <!-- Quiz Questions -->
+        <div id="questions-container" style="display:none;">
+            <h2 id="quiz-title"></h2>
+            <div id="question-container"></div>
+            <button id="next-button" onclick="nextQuestion()">Next</button>
+        </div>
+
+        <!-- Results -->
+        <div id="result-container" style="display:none;">
+            <h2>Your Score: <span id="score"></span></h2>
+            <button onclick="restartQuiz()">Restart Quiz</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
