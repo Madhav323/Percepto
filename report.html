@@ -147,55 +147,58 @@
         let impairedCount = 0;
 
         function fetchAllAttempts() {
-            impairedCount = 0; // Reset the impaired count
+    impairedCount = 0; // Reset the impaired count
 
-            attemptKeys.forEach((attemptKey, index) => {
-                const reportContainer = document.getElementById(`report-${attemptKey}`);
-                reportContainer.innerHTML = ''; // Clear previous content
+    attemptKeys.forEach((attemptKey, index) => {
+        const reportContainer = document.getElementById(`report-${attemptKey}`);
+        reportContainer.innerHTML = ''; // Clear previous content
 
-                const attemptsRef = ref(db, `${attemptKey}/`);
-                get(attemptsRef)
-                    .then(snapshot => {
-                        if (snapshot.exists()) {
-                            const attempts = snapshot.val();
+        const attemptsRef = ref(db, `${attemptKey}/`);
+        get(attemptsRef)
+            .then(snapshot => {
+                if (snapshot.exists()) {
+                    const attempts = snapshot.val();
+                    const latestAttemptKey = Object.keys(attempts).sort().pop(); // Get the latest attempt (by key)
+                    const latestAttempt = attempts[latestAttemptKey];
 
-                            for (const [key, attempt] of Object.entries(attempts)) {
-                                const report = document.createElement('div');
-                                report.innerHTML = `
-                                    <strong>Score:</strong> ${attempt.score}<br>
-                                    <strong>Total Time:</strong> ${attempt.totalTime} seconds<br>
-                                    <strong>Average Time:</strong> ${attempt.avgTime} seconds<br>
-                                    <strong>First Tap Time:</strong> ${attempt.firstTapTime} seconds<br>
-                                    <strong>Total Taps:</strong> ${attempt.totalTaps}<br>
-                                    <strong>Total Incorrect Answers:</strong> ${attempt.totalIncorrectAnswers}<br>
-                                    <em>Attempt ID:</em> ${key}
-                                `;
-                                report.style.marginBottom = '10px';
-                                reportContainer.appendChild(report);
+                    // Create a report for the latest attempt
+                    const report = document.createElement('div');
+                    report.innerHTML = `
+                        <strong>Score:</strong> ${latestAttempt.score}<br>
+                        <strong>Total Time:</strong> ${latestAttempt.totalTime} seconds<br>
+                        <strong>Average Time:</strong> ${latestAttempt.avgTime} seconds<br>
+                        <strong>First Tap Time:</strong> ${latestAttempt.firstTapTime} seconds<br>
+                        <strong>Total Taps:</strong> ${latestAttempt.totalTaps}<br>
+                        <strong>Total Incorrect Answers:</strong> ${latestAttempt.totalIncorrectAnswers}<br>
+                        <em>Attempt ID:</em> ${latestAttemptKey}
+                    `;
+                    report.style.marginBottom = '10px';
+                    reportContainer.appendChild(report);
 
-                                // Determine the impairment status for each quiz attempt
-                                let quizResult = 'Present';
-                                if (attempt.score < 3 || attempt.firstTapTime > 6 || (attempt.totalTaps - attempt.score - attempt.totalIncorrectAnswers) > 2) {
-                                    quizResult = 'Impaired';
-                                    impairedCount++;
-                                }
+                    // Determine the impairment status for the latest quiz attempt
+                    let quizResult = 'Present';
+                    if (latestAttempt.score < 3 || latestAttempt.firstTapTime > 6 || 
+                        (latestAttempt.totalTaps - latestAttempt.score - latestAttempt.totalIncorrectAnswers) > 2) {
+                        quizResult = 'Impaired';
+                        impairedCount++;
+                    }
 
-                                const statusDiv = document.createElement('div');
-                                statusDiv.innerHTML = `<strong>Result:</strong> ${quizResult}`;
-                                reportContainer.appendChild(statusDiv);
-                            }
-                        } else {
-                            reportContainer.textContent = 'No attempts found.';
-                        }
+                    const statusDiv = document.createElement('div');
+                    statusDiv.innerHTML = `<strong>Result:</strong> ${quizResult}`;
+                    reportContainer.appendChild(statusDiv);
+                } else {
+                    reportContainer.textContent = 'No attempts found.';
+                }
 
-                        // After processing all attempts, calculate the CVI risk level
-                        displayCviRiskLevel();
-                    })
-                    .catch(error => {
-                        console.error(`Error fetching attempts for ${attemptKey}: `, error);
-                    });
+                // After processing all attempts, calculate the CVI risk level
+                displayCviRiskLevel();
+            })
+            .catch(error => {
+                console.error(`Error fetching attempts for ${attemptKey}: `, error);
             });
-        }
+    });
+}
+
 
         function displayCviRiskLevel() {
     const riskContainer = document.getElementById("cvi-risk-result");
